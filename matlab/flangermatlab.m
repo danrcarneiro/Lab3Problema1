@@ -1,7 +1,7 @@
 clear
 close all
-infile='saida.wav';
-outfile='saida2.wav';
+infile='entrada.wav';
+outfile='saida.wav';
 [x,Fs] = audioread(infile);
 x = x(1:2000000);
 fs=Fs;
