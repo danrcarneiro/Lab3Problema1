@@ -5,7 +5,7 @@ abspath = os.path.abspath(__file__)
 dname = os.path.dirname(abspath)
 os.chdir(dname)
 
-files = ['music', 'result1']
+files = ['music', 'echo_float', 'flanger_float']
 
 for f in files:
   sound = AudioSegment.from_wav("../assets/" + f + ".wav")
