@@ -1,0 +1,8 @@
+"./aic3204_loop_linein.obj"
+"./aic3204_test.obj"
+"./aic3204_tone_headphone.obj"
+"./main.obj"
+"../lnkx.cmd"
+--library=csl5502x.lib
+--library=ezdsp5502bsl.lib
+--library=rts55x.lib
