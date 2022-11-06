@@ -1,0 +1,15 @@
+{
+  "files.associations": {
+    "math.h": "c",
+    "csl_mcbsp.h": "c",
+    "ezdsp5502_mcbsp.h": "c",
+    "ezdsp5502.h": "c",
+    "csl.h": "c",
+    "_csl.h": "c",
+    "csl_datasz.h": "c",
+    "csl_datdat.h": "c",
+    "csl_uartdat.h": "c",
+    "csl_i2cdat.h": "c",
+    "csl_rtcdat.h": "c"
+  }
+}

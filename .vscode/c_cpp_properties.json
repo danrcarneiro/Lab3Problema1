@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:\\Users\\Mazinho\\Downloads\\Kit TMS320C5502 eZdsp-20221010\\ezdsp5502_BSL_RevC\\ezdsp5502_v1\\C55xxCSL\\include",
+                "C:\\Users\\Mazinho\\Downloads\\Kit TMS320C5502 eZdsp-20221010\\ezdsp5502_BSL_RevC\\ezdsp5502_v1\\include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "C:\\cygwin64\\bin\\gcc.exe",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++14",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}

@@ -36,12 +36,25 @@
 // *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.    
 // *                                                                          
 //////////////////////////////////////////////////////////////////////////////
+
 #include "stdio.h"
 #include "ezdsp5502.h"
 #include "ezdsp5502_mcbsp.h"
 #include "csl_mcbsp.h"
 
-#define BUFFER_SIZE 2000
+
+#define DELAY 10 //mS
+#define WIDTH 1 //mS
+
+#define MAX_DELAY (DELAY+WIDTH)*48 // em AMOSTRAS
+#define MIN_DELAY DELAY*48 //em AMOSTRAS
+#define RATE 1
+#define MIX 0.75
+
+#define BUFFER_SIZE MAX_DELAY*2 // Representa o delay em amostras
+
+
+#define
 
 extern Int16 AIC3204_rset( Uint16 regnum, Uint16 regval);
 
@@ -53,6 +66,14 @@ extern Int16 AIC3204_rset( Uint16 regnum, Uint16 regval);
  */
 Int16 aic3204_loop_linein( )
 {
+    Int16 sinetable[48] = {
+                           24,27,30,33,36,39,41,43,
+                           45,46,47,48,48,48,47,46,
+                           45,43,41,39,36,33,30,27,
+                           24,21,18,15,12,9,7,5,
+                           3,2,1,0,0,0,1,2,
+                           3,5,7,9,12,15,18,21
+        };
     Int16 sec, msec;
     Int16 sample;
     Int16 inputLeft, inputRight;
@@ -61,6 +82,8 @@ Int16 aic3204_loop_linein( )
     Int16 bufferLeft[BUFFER_SIZE] = {0};
     Int16 bufferRight[BUFFER_SIZE] = {0};
     Int32 i;
+    Int32 sinecounter;
+    Int16 delayTime;
     float gain;
   
     /* ---------------------------------------------------------------- *
@@ -129,13 +152,19 @@ Int16 aic3204_loop_linein( )
     inputRight = 0;
 
     i = 0;
-
+    sinecounter = 0;
 
     while (1) {
-
+        if (sinecounter >= 48) sinecounter=0;
         EZDSP5502_MCBSP_read(&inputLeft);      // RX right channel
-        delayedLeft = bufferLeft[i];
-        outputLeft = inputLeft + delayedLeft;
+        bufferLeft[i] = inputLeft;
+        delayTime = (DELAY+WIDTH/2)+WIDTH/2*sinetable[sinecounter];
+        if (delayTime > i) {
+            outputLeft = inputLeft + MIX*bufferLeft[i-delayTime+BUFFER_SIZE];
+        }
+        else {
+            outputLeft = inputLeft + MIX*bufferLeft[i-delayTime];
+        }
         EZDSP5502_MCBSP_write( outputLeft);      // TX left channel first (FS Low)
         bufferLeft[i] = inputLeft + delayedLeft*gain;
 
@@ -153,4 +182,3 @@ Int16 aic3204_loop_linein( )
     
     return 0;
 }
-
