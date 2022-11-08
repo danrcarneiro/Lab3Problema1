@@ -54,8 +54,6 @@
 #define BUFFER_SIZE MAX_DELAY*2 // Representa o delay em amostras
 
 
-#define
-
 extern Int16 AIC3204_rset( Uint16 regnum, Uint16 regval);
 
 /*
@@ -84,7 +82,7 @@ Int16 aic3204_loop_linein( )
     Int32 i;
     Int32 sinecounter;
     Int16 delayTime;
-    float gain;
+    float gain=0.4;
   
     /* ---------------------------------------------------------------- *
      *  Configure AIC3204                                               *
@@ -157,23 +155,28 @@ Int16 aic3204_loop_linein( )
     while (1) {
         if (sinecounter >= 48) sinecounter=0;
         EZDSP5502_MCBSP_read(&inputLeft);      // RX right channel
-        bufferLeft[i] = inputLeft;
-        delayTime = (DELAY+WIDTH/2)+WIDTH/2*sinetable[sinecounter];
+        delayTime = sinetable[sinecounter]*(DELAY+WIDTH)*2;
         if (delayTime > i) {
-            outputLeft = inputLeft + MIX*bufferLeft[i-delayTime+BUFFER_SIZE];
+            delayedLeft = bufferLeft[i-delayTime+BUFFER_SIZE]*MIX;
         }
         else {
-            outputLeft = inputLeft + MIX*bufferLeft[i-delayTime];
+            delayedLeft = bufferLeft[i-delayTime]*MIX;
         }
+        outputLeft = inputLeft*0.6 + delayedLeft*gain;
         EZDSP5502_MCBSP_write( outputLeft);      // TX left channel first (FS Low)
-        bufferLeft[i] = inputLeft + delayedLeft*gain;
+        bufferLeft[i] = outputLeft;
 
         EZDSP5502_MCBSP_read(&inputRight); // RX left channel
-        delayedRight = bufferRight[i];
-        outputRight = inputRight + delayedRight;
+        if (delayTime > i) {
+            delayedRight = bufferRight[i-delayTime+BUFFER_SIZE]*MIX;
+        }
+        else {
+            delayedRight = bufferRight[i-delayTime]*MIX;
+        }
+        outputRight = inputRight*0.6 + delayedRight*gain;
         EZDSP5502_MCBSP_write( outputRight);      // TX right channel next (FS High)
-        bufferRight[i] = inputRight + delayedRight*gain;
-
+        bufferRight[i] = outputRight;
+        if (++sinecounter >= 48 ) sinecounter=0;
         if (++i >= BUFFER_SIZE ) i=0;
     }
     

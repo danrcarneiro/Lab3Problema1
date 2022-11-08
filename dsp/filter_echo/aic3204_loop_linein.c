@@ -61,7 +61,7 @@ Int16 aic3204_loop_linein( )
     Int16 bufferLeft[BUFFER_SIZE] = {0};
     Int16 bufferRight[BUFFER_SIZE] = {0};
     Int32 i;
-    float gain;
+    float gain = 0.4;
   
     /* ---------------------------------------------------------------- *
      *  Configure AIC3204                                               *
@@ -137,13 +137,13 @@ Int16 aic3204_loop_linein( )
         delayedLeft = bufferLeft[i];
         outputLeft = inputLeft + delayedLeft;
         EZDSP5502_MCBSP_write( outputLeft);      // TX left channel first (FS Low)
-        bufferLeft[i] = inputLeft + delayedLeft*gain;
+        bufferLeft[i] = inputLeft*0.6 + delayedLeft*gain;
 
         EZDSP5502_MCBSP_read(&inputRight); // RX left channel
         delayedRight = bufferRight[i];
         outputRight = inputRight + delayedRight;
         EZDSP5502_MCBSP_write( outputRight);      // TX right channel next (FS High)
-        bufferRight[i] = inputRight + delayedRight*gain;
+        bufferRight[i] = inputRight*0.6 + delayedRight*gain;
 
         if (++i >= BUFFER_SIZE ) i=0;
     }
